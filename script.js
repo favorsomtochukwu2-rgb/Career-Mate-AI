@@ -1,4 +1,3 @@
-// CareerMate AI - JavaScript starter
 /** @type {Record<string, {title:string, button:string, result:string, apiTool:string}>} */
 const info = {
   letter: {
@@ -34,8 +33,70 @@ let current = "letter";
 const $ = (id) => document.getElementById(id);
 
 // ========== CHANGE THIS TO YOUR REAL RENDER URL ==========
-const BACKEND_URL = "https://careermate-backend-mx51.onrender.com";
+const BACKEND_URL = "https://YOUR-RENDER-URL.onrender.com";
 // ========================================================
+
+// ========== PAYSTACK SETTINGS ==========
+const PAYSTACK_PUBLIC_KEY = "pk_live_7c2a92fbdd3cff1421df5d7c99a5dbe3e1423018";
+const PREMIUM_PRICE = 1500 * 100; // ₦1500 in kobo
+const FREE_LIMIT = 3; // Number of free generations
+// ======================================
+
+function getUsage() {
+  const data = localStorage.getItem("careermate_usage");
+  return data ? JSON.parse(data) : { count: 0, premiumUntil: null };
+}
+
+function saveUsage(data) {
+  localStorage.setItem("careermate_usage", JSON.stringify(data));
+}
+
+function isPremium() {
+  const usage = getUsage();
+  if (!usage.premiumUntil) return false;
+  return new Date(usage.premiumUntil) > new Date();
+}
+
+function canGenerate() {
+  if (isPremium()) return true;
+  const usage = getUsage();
+  return usage.count < FREE_LIMIT;
+}
+
+function increaseUsage() {
+  if (isPremium()) return;
+  const usage = getUsage();
+  usage.count += 1;
+  saveUsage(usage);
+}
+
+function activatePremium() {
+  const usage = getUsage();
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + 30); // 30 days
+  usage.premiumUntil = expiry.toISOString();
+  usage.count = 0;
+  saveUsage(usage);
+  alert("Payment successful! You now have unlimited access for 30 days.");
+}
+
+function payWithPaystack() {
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: "customer@example.com", // You can later collect real email
+    amount: PREMIUM_PRICE,
+    currency: "NGN",
+    ref: "CM_" + Date.now(),
+    callback: function (response) {
+      // Payment successful
+      activatePremium();
+    },
+    onClose: function () {
+      alert("Payment cancelled.");
+    }
+  });
+  handler.openIframe();
+}
 
 /** @param {string} key */
 function selectTool(key) {
@@ -65,6 +126,17 @@ document.querySelectorAll("[data-nav]").forEach((link) => {
 $("form").addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  // Check if user can generate
+  if (!canGenerate()) {
+    const confirmPay = confirm(
+      `You have used your ${FREE_LIMIT} free generations.\n\nPay ₦1,500 to unlock unlimited access for 30 days?`
+    );
+    if (confirmPay) {
+      payWithPaystack();
+    }
+    return;
+  }
+
   const values = {
     name: $("name").value.trim(),
     job: $("job").value.trim(),
@@ -84,7 +156,7 @@ $("form").addEventListener("submit", async (event) => {
   generateButton.disabled = true;
   generateButton.textContent = "Generating with AI...";
 
-  // Build a clear input for the AI
+  // Build input for AI
   let inputText = `Name: ${values.name || "Not provided"}
 Job title: ${values.job}
 Qualification: ${values.qualification || "Not provided"}
@@ -120,6 +192,10 @@ Skills: ${values.skills}`;
     $("result").value = data.result || "No result returned.";
     $("resultBox").hidden = false;
     $("resultBox").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Count this generation
+    increaseUsage();
+
   } catch (error) {
     console.error(error);
     alert("AI generation failed. Please try again.\n\n" + error.message);
