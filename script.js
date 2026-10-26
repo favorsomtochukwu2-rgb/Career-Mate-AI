@@ -33,7 +33,7 @@ let current = "letter";
 const $ = (id) => document.getElementById(id);
 
 // ========== CHANGE THIS TO YOUR REAL RENDER URL ==========
-const BACKEND_URL = "https://YOUR-RENDER-URL.onrender.com";
+const BACKEND_URL = "https://careermate-backend-mx51.onrender.com";
 // ========================================================
 
 // ========== PAYSTACK SETTINGS ==========
