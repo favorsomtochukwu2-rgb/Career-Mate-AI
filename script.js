@@ -164,7 +164,8 @@ $("form").addEventListener("submit", async (event) => {
       `You have used your ${FREE_LIMIT} free generations.\n\nPay ₦1,500 to unlock unlimited access for 30 days?`
     );
     if (confirmPay) {
-      payWithPaystack();
+  alert("Opening Paystack...");
+  payWithPaystack();
     }
     return;
   }
