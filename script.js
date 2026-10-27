@@ -80,21 +80,49 @@ function activatePremium() {
   alert("Payment successful! You now have unlimited access for 30 days.");
 }
 
+
 function payWithPaystack() {
   const handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
-    email: "customer@example.com", // You can later collect real email
+    email: "customer@example.com",
     amount: PREMIUM_PRICE,
     currency: "NGN",
     ref: "CM_" + Date.now(),
-    callback: function (response) {
-      // Payment successful
-      activatePremium();
+
+    callback: async function(response) {
+      try {
+        const verification = await fetch(
+          `${BACKEND_URL}/api/verify-payment`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              reference: response.reference
+            })
+          }
+        );
+
+        const result = await verification.json();
+
+        if (verification.ok && result.verified === true) {
+          activatePremium();
+          alert("Payment verified! CareerMate AI Premium is now active.");
+        } else {
+          alert("We could not verify your payment. Please contact support if you were charged.");
+        }
+      } catch (error) {
+        console.error("Payment verification error:", error);
+        alert("We could not verify your payment right now. Please try again or contact support if you were charged.");
+      }
     },
-    onClose: function () {
+
+    onClose: function() {
       alert("Payment cancelled.");
     }
   });
+
   handler.openIframe();
 }
 
