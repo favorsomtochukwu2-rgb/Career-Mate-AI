@@ -89,6 +89,7 @@ function payWithPaystack() {
   alert("Paystack loaded: " + typeof PaystackPop);
 console.log("PaystackPop:", PaystackPop);
   const handler = PaystackPop.setup({
+    alert("Checkout handler created: " + typeof handler.openIframe);
     key: PAYSTACK_PUBLIC_KEY,
     email: "customer@example.com",
     amount: PREMIUM_PRICE,
