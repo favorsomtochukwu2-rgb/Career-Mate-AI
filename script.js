@@ -37,7 +37,7 @@ const BACKEND_URL = "https://careermate-backend-mx51.onrender.com";
 // ========================================================
 
 // ========== PAYSTACK SETTINGS ==========
-const PAYSTACK_PUBLIC_KEY = "pk_live_7c2a92fbdd3cff1421df5d7c99a5dbe3e1423018";
+const PAYSTACK_PUBLIC_KEY = "pk_test_6d7f71e351b386a15a8b9817e256b7ec05b3a9fb";
 const PREMIUM_PRICE = 1500 * 100; // ₦1500 in kobo
 const FREE_LIMIT = 3; // Number of free generations
 // ======================================
