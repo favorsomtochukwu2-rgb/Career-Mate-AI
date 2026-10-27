@@ -127,7 +127,12 @@ function payWithPaystack() {
     }
   });
 
+  try {
   handler.openIframe();
+} catch (error) {
+  console.error("Paystack checkout error:", error);
+  alert("Paystack could not open. Please try Chrome or check your internet connection.");
+    };
 }
 
 /** @param {string} key */
