@@ -86,6 +86,8 @@ function payWithPaystack() {
     alert("Paystack did not load. Please refresh and try again.");
     return;
   }
+  alert("Paystack loaded: " + typeof PaystackPop);
+console.log("PaystackPop:", PaystackPop);
   const handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
     email: "customer@example.com",
