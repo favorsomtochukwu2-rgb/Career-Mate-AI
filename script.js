@@ -82,6 +82,10 @@ function activatePremium() {
 
 
 function payWithPaystack() {
+  if (typeof PaystackPop === "undefined") {
+    alert("Paystack did not load. Please refresh and try again.");
+    return;
+  }
   const handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
     email: "customer@example.com",
